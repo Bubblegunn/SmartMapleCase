@@ -1,58 +1,119 @@
-# React Project - 2025
+# Smart Mapple - Calendar Scheduler App
 
-Merhaba, bu projede sizden belirtilen hataların giderilmesi ve yeni özelliklerin uygulamaya eklenmesi beklenmektedir.
+## 📝 Project Overview
 
-## 📦 Kurulum ve Başlatma Adımları
+This project is an advanced calendar scheduler application that allows efficient staff scheduling and management with powerful visualizations and user-friendly interfaces. The application includes features like drag-and-drop event management, pair highlighting, and responsive design for both desktop and mobile devices.
 
-Projeyi çalıştırmak için aşağıdaki adımları takip edin:
+## 🌟 Completed Requirements
 
-```sh
+1. **ProfileCard Role Display Fix**
+   - Fixed role display when user profile is not yet loaded
+   - Implemented fallback to localStorage for role information
+   - Added proper error handling to prevent application crashes
+
+2. **Calendar Initial Date Navigation**
+   - Calendar now starts at the first event date instead of current month
+   - Added event detail popup showing staff name, shift name, date, and times
+   - Fixed navigation for optimal user experience
+
+3. **Staff-Based Event Filtering**
+   - Implemented filtering to show only selected staff's events
+   - Optimized filtering mechanism for better performance
+   - Added smooth transitions when switching between staff members
+
+4. **Pair Day Highlighting**
+   - Fixed the pair day highlighting to only mark relevant days
+   - Implemented color-coded highlighting based on the paired staff member
+   - Optimized the pair calculation algorithm for better performance
+
+5. **Drag and Drop Event Management**
+   - Implemented Option 2: Enhanced drag-and-drop with state persistence
+   - Updated Redux store and localStorage when events are moved
+   - Added visual feedback during drag operations
+
+6. **Design & UI Improvements**
+   - Created a modern, responsive design that works on all devices
+   - Implemented smooth animations and transitions
+   - Enhanced overall user experience with intuitive navigation
+   - Fixed layout alignment between profile and calendar components
+
+## 🚀 Technical Implementation
+
+### 1. Performance Optimization Techniques
+
+```jsx
+// Memoization to prevent unnecessary re-renders
+const CalendarCell = React.memo(({ dayNumber, isToday, highlightClass, tooltipTitle, borderColor }) => {
+  // Component logic
+});
+
+// useMemo for expensive calculations
+const pairHighlightedDays = useMemo(() => {
+  // Pair calculation logic
+}, [schedule, selectedStaffId]);
+
+// useCallback for stable function references
+const renderDayCellContent = useCallback((arg) => {
+  // Rendering logic
+}, [dependencies]);
+2. Redux State Management
+// Event update action in the reducer
+[types.UPDATE_EVENT_SUCCESS]: (state, { payload }) => {
+  const { eventId, newStartDate, newEndDate } = payload;
+  const updatedSchedule = { ...state.schedule };
+  
+  if (updatedSchedule.assignments) {
+    updatedSchedule.assignments = updatedSchedule.assignments.map(assignment => {
+      if (assignment.id === eventId) {
+        return {
+          ...assignment,
+          shiftStart: newStartDate,  // Correct field names
+          shiftEnd: newEndDate,
+          isUpdated: true
+        };
+      }
+      return assignment;
+    });
+  }
+  
+  return {
+    ...state,
+    loading: false,
+    errors: {},
+    schedule: updatedSchedule,
+  };
+}
+3. Responsive Design Implementation
+css
+CopyInsert
+/* Mobile-first approach with responsive breakpoints */
+@media (max-width: 991px) {
+  .right-column {
+    width: 100%;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+    display: block !important; /* Ensure calendar visibility on mobile */
+  }
+  
+  /* Mobile information bar */
+  .mobile-calendar-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--card-bg-color);
+    padding: 12px 16px;
+    margin: 10px 0 15px 0;
+  }
+}
+📦 Installation and Setup
+
 npm install --legacy-peer-deps
 npm run dev
-```
 
-## 🐞 Hata Düzeltmeleri ve 📌 İstekler
-
-**1. ProfileCard Bileşeni – Rol Gösterimi** (15P)
-- Sorun: Kullanıcı profili henüz yüklenmemişken, ProfileCard bileşeninde role alanı gösterilemiyor ve uygulama hata veriyor.
-
-- Beklenen Davranış: Eğer state üzerinden profil datası henüz gelmemişse, localStorage içindeki role bilgisi kullanılmalı ve düzgün şekilde ekranda gösterilmelidir. Uygulama bu durumda hata vermemelidir.
-
-**2. Takvim Başlangıç Tarihi ve Event Detayı** (15P)
-- Sorun: Takvim bileşeni (calendar) her zaman mevcut ay ile başlıyor.
-
-- Beklenen Davranış: Takvim, schedule verisindeki ilk etkinliğin (event) tarihine göre başlamalıdır. Yani ilk planlı etkinliğin olduğu aydan görünüm başlamalı.
-
-- Ek olarak, takvimdeki bir etkinliğe tıklandığında bir pop-up açılarak, ilgili etkinliğe ait personel adı, vardiya adı, tarih, başlangıç ve bitiş saatleri gibi tüm bilgilerin görüntülenmesi beklenmektedir.
-
-**3. Personel Bazlı Etkinlik Filtreleme** (10P)
-- Sorun: Takvimde tüm personellerin (staff) etkinlikleri gösteriliyor.
-
-- Beklenen Davranış: Sadece seçili olan personelin etkinlikleri takvimde görünmelidir.
-
-**4. Pair Günlerinin Altını Çizme** (25P)
-- Sorun: highlightedPair sınıfı tüm günlere uygulandığı için takvimdeki bütün günlerin altı çizili görünmekte.
-
-- Beklenen Davranış: Her personelin sahip olduğu pair listesi, o personelin başka bir personelle birlikte çalıştığı tarih aralıklarını belirtmektedir. Takvimde, seçili personelin bu tarih aralıklarına denk gelen günleri (pair günleri), highlightedPair sınıfı ile altı çizili olarak gösterilmelidir. Diğer günler normal şekilde görünmelidir.
-
-- Ek olarak beklenen davranış, her pair’in takvimde kendi rengiyle temsil edilmesidir. Yani, takvimde tıklanabilir durumda olan her personel farklı bir renkte gösterilmelidir. Örneğin, Tuba seçili personel ise ve 14. gün Esra ile bir pair oluşturuyorsa, Esra'nın rengi kırmızıysa, ayın 14'ü kırmızı alt çizgiyle vurgulanmalıdır.
-
-**5. Takvimde Sürükle-Bırak Özelliğinin Kontrol Edilmesi** (5P)
-- Sorun: Takvim üzerindeki etkinlikler (events) kullanıcı tarafından sürüklenip taşınabiliyor.
-
-- Beklenen Davranış (Opsiyon 1): Etkinlikler sürüklenemez olmalı, yani "drag and drop" özelliği devre dışı bırakılmalıdır. (5P)
-
-- Beklenen Davranış (Opsiyon 2): Etkinlikler sürüklenebilir şekilde kalmalıdır. Ancak, takvimdeki bir etkinlik sürüklenerek günü değiştirildiğinde, bu değişiklik state/redux verisine yansıtılmalıdır. Bu işlemlerin, ilgili bileşen içinde ve projenin store klasörü altında gerçekleştirilmesi gerekmektedir. (25P)
-
-**6. Tasarım Güncellemeleri** (25P + Ekstra)
-- Beklenti: Mevcut bileşenlerin görsel ve yapısal tasarımları elinizdeki verilere uygun şekilde iyileştirilmeli ve modern, kullanıcı dostu bir arayüz haline getirilmelidir.
-
-#
----
-#
- 
-📝 **Öneri**: Kullanıcı deneyimini artıracak şekilde yeniden düzenlemeler yapabilir, component hiyerarşisini sadeleştirebilir ve UI/UX anlamında profesyonel dokunuşlar ekleyebilirsiniz.
-
-**Her geliştirme adımında kodun okunabilirliğine, performansına ve bileşenlerin yeniden kullanılabilirliğine dikkat edilmesi beklenmektedir.Proje ile ilgili sorularınızı info@smart-maple.com adresine iletebilirsiniz.**
-
-✨ Teşekkürler!
+🗃️ Project Structure
+src/components/Calendar - Calendar component with event handling
+src/components/Profile - User profile component
+src/components/ProfileCalendar - Main container component
+src/store - Redux store with actions and reducers
+src/models - TypeScript interfaces and models
+src/utils - Helper functions and utilities
